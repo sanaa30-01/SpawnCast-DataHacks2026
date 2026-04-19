@@ -4,6 +4,8 @@ Fishing prediction API (FastAPI).
 Interactive API docs (Swagger UI) are auto-generated at:
 http://localhost:8000/docs
 (Use your actual host/port if different, e.g. http://127.0.0.1:8001/docs.)
+
+Run from this folder: cd backend && uvicorn main:app --reload
 """
 
 import json
@@ -21,8 +23,10 @@ from icalendar import Calendar, Event
 from pydantic import BaseModel
 
 
-_ENV_PATH = Path(__file__).resolve().parent / ".env"
-load_dotenv(_ENV_PATH)
+_BACKEND_DIR = Path(__file__).resolve().parent
+_REPO_ROOT = _BACKEND_DIR.parent
+load_dotenv(_REPO_ROOT / ".env")
+load_dotenv(_BACKEND_DIR / ".env", override=True)
 
 app = FastAPI(title="Fishing Prediction API")
 
