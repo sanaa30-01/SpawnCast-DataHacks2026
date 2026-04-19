@@ -1,0 +1,5 @@
+fastapi
+uvicorn
+google-generativeai
+icalendar
+python-dotenv
