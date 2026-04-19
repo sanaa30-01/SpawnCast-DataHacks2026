@@ -3,3 +3,9 @@
 __pycache__/
 *.py[cod]
 .DS_Store
+
+# JavaScript / frontend (install & build locally)
+node_modules/
+frontend/node_modules/
+frontend/dist/
+frontend/.wrangler/
