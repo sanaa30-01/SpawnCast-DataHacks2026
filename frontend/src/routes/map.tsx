@@ -11,13 +11,13 @@ const FishingMap = lazy(() =>
 export const Route = createFileRoute("/map")({
   head: () => ({
     meta: [
-      { title: "Forecast Map — PrecisionFish" },
+      { title: "Forecast Map — SpawnCast" },
       {
         name: "description",
         content:
           "Interactive prediction surface across the West Coast. Hover for quick yield estimates, click any region for full species-level forecasts.",
       },
-      { property: "og:title", content: "Forecast Map — PrecisionFish" },
+      { property: "og:title", content: "Forecast Map — SpawnCast" },
       {
         property: "og:description",
         content: "Heatmap of predicted fishing yield across CA, OR, WA waters by month.",

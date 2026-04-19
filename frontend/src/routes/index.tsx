@@ -8,13 +8,13 @@ import fishingImg from "@/assets/fishing.jpg";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "PrecisionFish — AI-Driven Fishing Forecasts & Spatial Yield Intelligence" },
+      { title: "SpawnCast — AI-Driven Fishing Forecasts & Spatial Yield Intelligence" },
       {
         name: "description",
         content:
           "Transform biological signals into actionable catch intelligence. Spatial forecasting, species yield predictions and fleet-grade decision tools for the modern fishing industry.",
       },
-      { property: "og:title", content: "PrecisionFish — AI-Driven Fishing Foresight" },
+      { property: "og:title", content: "SpawnCast — AI-Driven Fishing Foresight" },
       {
         property: "og:description",
         content:
@@ -58,8 +58,15 @@ function Index() {
             </Link>
           </div>
           <div className="lg:col-span-6">
-            <div className="aspect-[4/3] rounded-lg overflow-hidden border border-white/10 shadow-[var(--shadow-elevated)] bg-gradient-to-br from-[#3a6fb0] via-[#5fb4b4] to-[#e68c3c] relative">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_60%,rgba(200,55,55,0.6),transparent_40%),radial-gradient(circle_at_60%_30%,rgba(230,140,60,0.5),transparent_45%)]" />
+            <div className="relative aspect-[4/3] overflow-hidden rounded-lg border border-white/10 bg-[color:var(--navy-deep)] shadow-[var(--shadow-elevated)]">
+              <img
+                src="/forecast-map-preview.png"
+                alt=""
+                className="absolute inset-0 h-full w-full object-cover object-center"
+                loading="lazy"
+                decoding="async"
+              />
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[color:var(--navy-deep)]/90 to-transparent" />
               <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-white text-[10px] font-mono uppercase tracking-wider">
                 <span>Predicted Yield</span>
                 <span>CA · OR · WA</span>

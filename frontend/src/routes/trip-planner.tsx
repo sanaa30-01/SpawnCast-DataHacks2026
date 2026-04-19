@@ -14,7 +14,8 @@ import { SiteNav } from "@/components/SiteNav";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { YieldBadge, ConfidenceBar } from "@/components/YieldBadge";
-import { ZONES, type Zone, type SpeciesForecast } from "@/data/zones";
+import { ZONES, type Zone, type SpeciesForecast, findNearestZone } from "@/data/zones";
+import { resolveApiBase } from "@/lib/api";
 import { buildICS, downloadICS } from "@/lib/ics";
 import type { TripItem } from "@/lib/trip-store";
 
@@ -28,13 +29,13 @@ interface PlannerSearch {
 export const Route = createFileRoute("/trip-planner")({
   head: () => ({
     meta: [
-      { title: "Trip Planner — PrecisionFish Decision Engine" },
+      { title: "Trip Planner — SpawnCast Decision Engine" },
       {
         name: "description",
         content:
           "Pick a sector and/or target species with a date window to get a ranked fishing plan with confidence scores and one-click calendar export.",
       },
-      { property: "og:title", content: "Trip Planner — PrecisionFish" },
+      { property: "og:title", content: "Trip Planner — SpawnCast" },
       {
         property: "og:description",
         content:
@@ -99,6 +100,72 @@ interface PlanResult {
   endISO: string;
   ranked: RankedEntry[];
   notice?: string;
+}
+
+interface ApiPlannerRanked {
+  rank: number;
+  species: string;
+  display_name?: string;
+  lat: number;
+  lon: number;
+  confidence: number;
+  yield: number;
+  fish_month_str: string;
+  explanation: string;
+}
+
+interface ApiPlannerResponse {
+  ranked: ApiPlannerRanked[];
+  notice?: string | null;
+}
+
+function emojiForSpecies(sci: string): string {
+  const pairs: [string, string][] = [
+    ["Sardinops", "🐟"],
+    ["Engraulis", "🐠"],
+    ["Sebastes", "🐠"],
+    ["Merluccius", "🐟"],
+    ["Metacarcinus", "🦀"],
+    ["Oncorhynchus", "🐟"],
+    ["Thunnus", "🦈"],
+    ["Doryteuthis", "🦑"],
+    ["Aurelia", "🪼"],
+    ["Osmeridae", "🐟"],
+  ];
+  for (const [k, v] of pairs) {
+    if (sci.includes(k)) return v;
+  }
+  return "🐟";
+}
+
+function mapApiResponseToPlanResult(
+  api: ApiPlannerResponse,
+  selectedZone: Zone | null,
+  speciesFilter: string[],
+  startISO: string,
+  endISO: string,
+): PlanResult {
+  const ranked: RankedEntry[] = api.ranked.map((r) => {
+    const z = findNearestZone(r.lat, r.lon);
+    const species: SpeciesForecast = {
+      name: r.display_name || r.species,
+      emoji: emojiForSpecies(r.species),
+      yield: r.yield,
+      confidence: r.confidence,
+      optimalWindow: { start: startISO, end: endISO },
+      peakMonth: r.fish_month_str || "—",
+      explanation: r.explanation,
+    };
+    return { zone: z, species };
+  });
+  return {
+    zone: selectedZone,
+    speciesFilter,
+    startISO,
+    endISO,
+    ranked,
+    notice: api.notice ?? undefined,
+  };
 }
 
 function buildPlan(
@@ -173,8 +240,9 @@ function TripPlanner() {
   const search = Route.useSearch();
   const navigate = useNavigate();
 
-  const today = "2026-05-01";
-  const later = "2026-08-31";
+  // Full 2026 window so species optimalWindow (also built in 2026) usually intersects by default.
+  const today = "2026-01-01";
+  const later = "2026-12-31";
 
   const initialZone = useMemo<Zone | null>(() => {
     if (search.zone) return ZONES.find((z) => z.id === search.zone) ?? null;
@@ -200,12 +268,18 @@ function TripPlanner() {
   const [loading, setLoading] = useState(false);
   const [expanded, setExpanded] = useState<string | null>(null);
 
+  const plannerAnchor = useMemo(() => {
+    const lat = ZONES.reduce((a, z) => a + z.lat, 0) / ZONES.length;
+    const lon = ZONES.reduce((a, z) => a + z.lon, 0) / ZONES.length;
+    return { lat, lon };
+  }, []);
+
   const filteredZones = useMemo(() => {
-    if (!zoneQuery) return ZONES.slice(0, 6);
-    const q = zoneQuery.toLowerCase();
+    const q = zoneQuery.trim().toLowerCase();
+    if (!q) return ZONES;
     return ZONES.filter(
       (z) => z.name.toLowerCase().includes(q) || z.region.toLowerCase().includes(q),
-    ).slice(0, 6);
+    );
   }, [zoneQuery]);
 
   const filteredSpecies = useMemo(() => {
@@ -218,24 +292,59 @@ function TripPlanner() {
   // Auto-run when arriving with prefilled params
   useEffect(() => {
     if (initialZone || initialSpecies.length > 0) {
-      runPlan(initialZone, initialSpecies, search.start ?? today, search.end ?? later);
+      void runPlan(initialZone, initialSpecies, search.start ?? today, search.end ?? later);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  function runPlan(z: Zone | null, sp: string[], s: string, e: string) {
-    setLoading(true);
-    setPlan(null);
-    setTimeout(() => {
-      const result = buildPlan(z, sp, s, e);
-      setPlan(result);
-      setExpanded(result.ranked[0] ? entryKey(result.ranked[0]) : null);
-      setLoading(false);
-    }, 350);
-  }
-
   function entryKey(e: RankedEntry) {
     return `${e.zone.id}::${e.species.name}`;
+  }
+
+  async function runPlan(z: Zone | null, sp: string[], s: string, e: string) {
+    setLoading(true);
+    setPlan(null);
+    const base = resolveApiBase();
+    const lat = z ? z.lat : plannerAnchor.lat;
+    const lon = z ? z.lon : plannerAnchor.lon;
+
+    if (base) {
+      try {
+        const res = await fetch(`${base}/planner/recommendations`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            lat,
+            lon,
+            start_date: s,
+            end_date: e,
+            species_filter: sp,
+          }),
+        });
+        if (res.ok) {
+          const data = (await res.json()) as ApiPlannerResponse;
+          if (data.ranked?.length) {
+            const mapped = mapApiResponseToPlanResult(data, z, sp, s, e);
+            setPlan(mapped);
+            setExpanded(mapped.ranked[0] ? entryKey(mapped.ranked[0]) : null);
+            setLoading(false);
+            return;
+          }
+        }
+      } catch {
+        /* use local fallback */
+      }
+    }
+
+    const result = buildPlan(z, sp, s, e);
+    if (base) {
+      result.notice = result.notice
+        ? `${result.notice} Offline fallback: SpawnCast API did not return rankings.`
+        : "Showing offline demo rankings. Start the FastAPI server on port 8000 for ML + Gemini-backed recommendations.";
+    }
+    setPlan(result);
+    setExpanded(result.ranked[0] ? entryKey(result.ranked[0]) : null);
+    setLoading(false);
   }
 
   function handleSubmit(e: React.FormEvent) {
@@ -250,7 +359,7 @@ function TripPlanner() {
       },
       replace: true,
     });
-    runPlan(zone, selectedSpecies, startDate, endDate);
+    void runPlan(zone, selectedSpecies, startDate, endDate);
   }
 
   function handleSelectZone(z: Zone) {

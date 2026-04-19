@@ -40,10 +40,6 @@ export function Hero({ forecastLead = "5wk" }: HeroProps) {
         className="absolute inset-0 pointer-events-none"
         style={{ background: "var(--gradient-hero)", opacity: imageOpacity }}
       />
-      <div
-        className="absolute inset-0 bg-[color:var(--navy-deep)]/40 pointer-events-none"
-        style={{ opacity: imageOpacity }}
-      />
       {/* Solid navy underlay always present so the background "becomes" the next section's color */}
 
       <div className="relative z-10 max-w-[1400px] mx-auto px-6 lg:px-10 pt-40 pb-24 min-h-screen flex flex-col justify-center">
@@ -53,27 +49,27 @@ export function Hero({ forecastLead = "5wk" }: HeroProps) {
             Live Forecast Engine
           </div>
           <h1 className="text-white text-5xl sm:text-6xl lg:text-7xl font-black leading-[1.02] tracking-tight">
-            Precision Fishing.
+            SpawnCast.
             <br />
-            <span className="text-[color:var(--orange)]">AI-Driven Foresight.</span>
+            <span className="text-[color:var(--orange)]">Never Come Home Skunked Again.</span>
           </h1>
-          <p className="mt-8 text-white/80 text-lg lg:text-xl max-w-2xl font-light leading-relaxed">
+          <p className="mt-8 max-w-[min(42rem,65ch)] text-white/85 text-lg lg:text-xl font-light leading-relaxed">
             Transforming biological signals into actionable catch intelligence. We bridge the gap
             between larval density and commercial yield for the modern fleet.
           </p>
           <div className="mt-12 flex flex-wrap gap-4">
             <Link
               to="/map"
-              className="inline-flex items-center gap-2 px-7 py-4 bg-[color:var(--orange)] text-[color:var(--navy-deep)] font-bold text-sm uppercase tracking-wider hover:brightness-110 transition-all shadow-[0_10px_40px_-10px_oklch(0.7_0.16_50/0.6)]"
+              className="inline-flex h-[52px] min-h-[52px] items-center justify-center gap-2 px-7 bg-[color:var(--orange)] text-[color:var(--navy-deep)] font-bold text-sm uppercase tracking-wider hover:brightness-110 transition-all shadow-[0_10px_40px_-10px_oklch(0.7_0.16_50/0.6)]"
             >
               Explore Future Map
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden>
                 <path d="M5 12h14M13 5l7 7-7 7" />
               </svg>
             </Link>
             <Link
               to="/trip-planner"
-              className="inline-flex items-center gap-2 px-7 py-4 border border-white/30 text-white font-bold text-sm uppercase tracking-wider hover:bg-white/10 transition-all"
+              className="inline-flex h-[52px] min-h-[52px] items-center justify-center gap-2 border-2 border-white/45 bg-white/[0.08] px-7 text-white font-bold text-sm uppercase tracking-wider shadow-[0_8px_32px_-12px_oklch(0.18_0.06_252/0.55),inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-sm transition-all hover:border-white/60 hover:bg-white/[0.14]"
             >
               Plan a Trip
             </Link>

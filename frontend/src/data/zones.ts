@@ -49,9 +49,11 @@ function rand(seed: number) {
 
 function makeWindow(seed: number, peakMonthIdx: number): { start: string; end: string } {
   const year = 2026;
-  const start = new Date(year, peakMonthIdx, 1 + Math.floor(rand(seed) * 10));
-  const end = new Date(start);
-  end.setDate(start.getDate() + 14 + Math.floor(rand(seed + 1) * 18));
+  // UTC calendar dates so ISO strings match the trip planner (date inputs + "T00:00:00Z" formatting).
+  const day = 1 + Math.floor(rand(seed) * 10);
+  const start = new Date(Date.UTC(year, peakMonthIdx, day));
+  const spanDays = 14 + Math.floor(rand(seed + 1) * 18);
+  const end = new Date(start.getTime() + spanDays * 86400000);
   return {
     start: start.toISOString().slice(0, 10),
     end: end.toISOString().slice(0, 10),
@@ -164,4 +166,18 @@ export function yieldColor(v: number): string {
 
 export function getZoneById(id: string): Zone | undefined {
   return ZONES.find((z) => z.id === id);
+}
+
+/** Map click (lat / lon) → closest trip-planner sector by Euclidean distance on coordinates. */
+export function findNearestZone(lat: number, lon: number): Zone {
+  let best = ZONES[0]!;
+  let bestD = Infinity;
+  for (const z of ZONES) {
+    const d = (z.lat - lat) ** 2 + (z.lon - lon) ** 2;
+    if (d < bestD) {
+      bestD = d;
+      best = z;
+    }
+  }
+  return best;
 }

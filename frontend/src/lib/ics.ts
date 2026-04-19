@@ -23,7 +23,7 @@ export function buildICS(items: TripItem[]): string {
 
   const events = items
     .map((item, i) => {
-      const uid = `${item.zoneId}-${item.species}-${item.addedAt}-${i}@precision-fishing`;
+      const uid = `${item.zoneId}-${item.species}-${item.addedAt}-${i}@spawncast`;
       const summary = `Fishing Op: High Yield ${item.species}`;
       const location = `${item.zoneName} (${item.lat}, ${item.lon})`;
       const description =
@@ -47,7 +47,7 @@ export function buildICS(items: TripItem[]): string {
   return [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
-    "PRODID:-//Precision Fishing//Trip Planner//EN",
+    "PRODID:-//SpawnCast//Trip Planner//EN",
     "CALSCALE:GREGORIAN",
     "METHOD:PUBLISH",
     events,

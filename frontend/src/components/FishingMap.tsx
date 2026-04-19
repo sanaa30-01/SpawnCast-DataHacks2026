@@ -100,6 +100,30 @@ export function FishingMap({ month, onSelect, selected }: Props) {
     onSelect(e.lngLat.lat, e.lngLat.lng);
   };
 
+  if (!MAPBOX_TOKEN) {
+    return (
+      <div className="flex h-full min-h-[320px] w-full flex-col items-center justify-center gap-3 rounded-md border border-dashed border-border bg-muted/30 px-6 text-center">
+        <p className="text-sm font-medium text-foreground">Map needs a Mapbox token</p>
+        <p className="max-w-md text-xs text-muted-foreground">
+          Add <code className="rounded bg-muted px-1 py-0.5 font-mono">VITE_MAPBOX_TOKEN</code> to{" "}
+          <code className="rounded bg-muted px-1 py-0.5 font-mono">frontend/.env</code> (see{" "}
+          <code className="rounded bg-muted px-1 py-0.5 font-mono">.env.example</code>). Use a public{" "}
+          <code className="rounded bg-muted px-1 py-0.5 font-mono">pk.…</code> token from{" "}
+          <a
+            className="text-primary underline underline-offset-2"
+            href="https://account.mapbox.com/access-tokens/"
+            target="_blank"
+            rel="noreferrer"
+          >
+            mapbox.com
+          </a>
+          , then stop and start <code className="rounded bg-muted px-1 py-0.5 font-mono">npm run dev</code> so
+          Vite picks up the variable.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="relative h-full w-full">
       <Map

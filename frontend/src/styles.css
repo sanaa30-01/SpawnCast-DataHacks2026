@@ -64,7 +64,7 @@
 
 :root {
   --radius: 0.375rem;
-  /* Precision Fishing — command center palette */
+  /* SpawnCast — command center palette */
   --background: oklch(1 0 0);
   --foreground: oklch(0.18 0.04 250);
   --card: oklch(1 0 0);
@@ -102,7 +102,13 @@
   --yield-4: oklch(0.78 0.17 70);  /* amber */
   --yield-5: oklch(0.65 0.22 30);  /* hot orange-red */
 
-  --gradient-hero: linear-gradient(180deg, oklch(0.18 0.06 252 / 0.55) 0%, oklch(0.12 0.05 252 / 0.85) 100%);
+  /* Hero image scrim: strong left for type legibility, open right for photography detail */
+  --gradient-hero: linear-gradient(
+    90deg,
+    oklch(0.18 0.06 252 / 0.78) 0%,
+    oklch(0.18 0.06 252 / 0.55) 42%,
+    oklch(0.18 0.06 252 / 0.36) 100%
+  );
   --shadow-elevated: 0 20px 60px -20px oklch(0.18 0.06 252 / 0.35);
   --shadow-panel: 0 10px 40px -10px oklch(0.18 0.06 252 / 0.25);
   --chart-1: oklch(0.646 0.222 41.116);

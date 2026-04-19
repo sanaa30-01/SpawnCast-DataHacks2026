@@ -13,7 +13,7 @@ export type TripItem = {
   addedAt: number;
 };
 
-const KEY = "precision-fishing.trip-items";
+const KEY = "spawncast.trip-items";
 
 export function getTripItems(): TripItem[] {
   if (typeof window === "undefined") return [];

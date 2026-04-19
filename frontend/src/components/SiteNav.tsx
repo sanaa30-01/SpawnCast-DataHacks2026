@@ -25,12 +25,17 @@ export function SiteNav({ variant = "solid" }: { variant?: Variant }) {
       }`}
     >
       <div className="max-w-[1400px] mx-auto px-6 lg:px-10 h-16 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2 group">
-          <div className="w-7 h-7 rounded-sm bg-[color:var(--orange)] flex items-center justify-center text-[color:var(--navy-deep)] font-black text-sm">
-            P
-          </div>
-          <span className="text-white font-bold tracking-tight text-sm uppercase">
-            Precision<span className="text-[color:var(--orange)]">Fish</span>
+        <Link to="/" className="group flex items-center gap-2.5 py-0.5 -translate-y-px">
+          <img
+            src="/spawncast-mark.png"
+            alt=""
+            width={32}
+            height={32}
+            className="h-8 w-8 shrink-0 object-contain select-none"
+            decoding="async"
+          />
+          <span className="text-white font-bold text-sm uppercase leading-none tracking-[-0.02em]">
+            Spawn<span className="text-[color:var(--orange)]">Cast</span>
           </span>
         </Link>
         <nav className="flex items-center gap-1 sm:gap-2 text-[13px] font-medium">
@@ -42,7 +47,7 @@ export function SiteNav({ variant = "solid" }: { variant?: Variant }) {
             <Link
               key={item.label}
               to={item.to}
-              className="px-3 py-2 text-white/80 hover:text-white transition-colors"
+              className="px-3 py-2 text-white transition-colors hover:text-[color:var(--orange)]"
               activeOptions={{ exact: true }}
               activeProps={{ className: "px-3 py-2 text-[color:var(--orange)]" }}
             >

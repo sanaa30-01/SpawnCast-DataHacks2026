@@ -1,11 +1,21 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { X, Calendar, MapPin, Sparkles, Plus } from "lucide-react";
-import { toast } from "sonner";
 import { getRegionDetail, type RegionDetail } from "@/lib/predictions";
+import { findNearestZone } from "@/data/zones";
 import { YieldBadge, ConfidenceBar } from "./YieldBadge";
 import { Button } from "@/components/ui/button";
-import { addTripItem } from "@/lib/trip-store";
 import { format, parseISO } from "date-fns";
+
+/** Match trip-planner default year (zones use 2026 windows). */
+function monthToUtcRangeISO(month: number, year = 2026): { start: string; end: string } {
+  const start = new Date(Date.UTC(year, month - 1, 1));
+  const end = new Date(Date.UTC(year, month, 0));
+  return {
+    start: start.toISOString().slice(0, 10),
+    end: end.toISOString().slice(0, 10),
+  };
+}
 
 interface Props {
   lat: number;
@@ -16,6 +26,16 @@ interface Props {
 
 export function RegionDetailPanel({ lat, lng, month, onClose }: Props) {
   const [detail, setDetail] = useState<RegionDetail | null>(null);
+  const tripPlannerSearch = useMemo(() => {
+    if (!detail) return null;
+    const nearest = findNearestZone(detail.lat, detail.lng);
+    const { start, end } = monthToUtcRangeISO(detail.month);
+    return {
+      zone: nearest.id,
+      start,
+      end,
+    };
+  }, [detail]);
 
   useEffect(() => {
     let active = true;
@@ -141,38 +161,13 @@ export function RegionDetailPanel({ lat, lng, month, onClose }: Props) {
         </div>
       )}
 
-      {detail && (
+      {detail && tripPlannerSearch && (
         <footer className="border-t border-border bg-card px-5 py-3">
-          <Button
-            className="w-full"
-            onClick={() => {
-              const top = detail.species[0];
-              addTripItem({
-                zoneId: detail.id,
-                zoneName: detail.regionName,
-                lat: detail.lat,
-                lon: detail.lng,
-                species: top.commonName,
-                emoji: "🐟",
-                yield:
-                  top.yieldLevel === "high"
-                    ? 0.85
-                    : top.yieldLevel === "moderate"
-                      ? 0.55
-                      : 0.25,
-                confidence: top.confidence,
-                windowStart: detail.bestWindow.startISO,
-                windowEnd: detail.bestWindow.endISO,
-                explanation: top.explanation,
-                addedAt: Date.now(),
-              });
-              toast.success(`Added ${top.commonName} to Trip Planner`, {
-                description: `${detail.regionName} · ${format(parseISO(detail.bestWindow.startISO), "MMM d")} – ${format(parseISO(detail.bestWindow.endISO), "MMM d")}`,
-              });
-            }}
-          >
-            <Plus className="mr-1 h-4 w-4" />
-            Add top species to Trip Planner
+          <Button className="w-full" asChild>
+            <Link to="/trip-planner" search={tripPlannerSearch}>
+              <Plus className="mr-1 h-4 w-4" />
+              Go to Trip Planner
+            </Link>
           </Button>
         </footer>
       )}
