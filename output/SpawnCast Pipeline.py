@@ -1,4 +1,8 @@
 # Databricks notebook source
+# Note:
+# This notebook was used for data processing and model training.
+# The production app uses the generated intelligence.json file.
+
 larvae = spark.table("larvae_filtered_west_coast")
 display(larvae)
 
