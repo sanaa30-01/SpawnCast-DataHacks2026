@@ -1,0 +1,42 @@
+[
+  {
+    "region_id": "CA-SD-GRID-12A",
+    "area": "Southern California",
+    "lat": 32.715,
+    "lon": -117.255,
+    "species": "Calico bass",
+    "yield_level": "High",
+    "confidence": 82,
+    "best_window": "Pre-dawn 05:15–07:30 (local), light swell WNW"
+  },
+  {
+    "region_id": "CA-LA-GRID-08C",
+    "area": "Southern California",
+    "lat": 33.902,
+    "lon": -118.422,
+    "species": "Yellowtail",
+    "yield_level": "Medium",
+    "confidence": 67,
+    "best_window": "Morning flood tide 08:00–11:45, clearing skies"
+  },
+  {
+    "region_id": "CA-MRY-GRID-03F",
+    "area": "Central Coast",
+    "lat": 36.603,
+    "lon": -121.889,
+    "species": "Lingcod",
+    "yield_level": "Low",
+    "confidence": 55,
+    "best_window": "Slack before low 14:20–16:10, Central Coast upwelling zone"
+  },
+  {
+    "region_id": "CA-SFB-GRID-21H",
+    "area": "San Francisco Bay",
+    "lat": 37.819,
+    "lon": -122.478,
+    "species": "Halibut",
+    "yield_level": "High",
+    "confidence": 76,
+    "best_window": "Outgoing tide 06:40–10:15, moderate NW wind"
+  }
+]
